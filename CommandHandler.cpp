@@ -14,21 +14,19 @@ CLI::CLI(CommandType user_commands[], byte len)
 }
 
 
-void CLI::begin(int boud){
-    //SerialUSB.begin(boud);
-    SerialUSB.begin(boud);
-    while (!SerialUSB.available());
-    //SerialUSB.println("Welcome to this simple Arduino command line interface (CLI).");
-    //SerialUSB.println("Type \"help\" to see a list of commands.");
+void CLI::begin(long boud){
+    Serial.begin(boud);
+    //while (!Serial.available());
+    Serial.println(WELCOME_MESSAGE);
 }
 
 
 void CLI::start_processing(){
     read_line();
-    if(!_error_flag){
+    if(!_error_flag && _command_asked){
         parse_line();
     }
-    if(!_error_flag){
+    if(!_error_flag && _command_asked){
         execute();
     }
 
@@ -36,20 +34,22 @@ void CLI::start_processing(){
     memset(args, 0, sizeof(args[0][0]) * MAX_NUM_ARGS * ARG_BUF_SIZE);
 
     _error_flag = false;
+    _command_asked = false;
 }
 
 void CLI::read_line(){
     String line_string;
 
-    while(!SerialUSB.available());
+    //while(!Serial.available());
 
-    if(SerialUSB.available()){
-        line_string = SerialUSB.readStringUntil('\n');
+    if(Serial.available()){
+        line_string = Serial.readStringUntil('\n');
         if(line_string.length() < LINE_BUF_SIZE){
           line_string.toCharArray(line, LINE_BUF_SIZE);
+          _command_asked = true;
         }
         else{
-          SerialUSB.println("Input string too long.");
+          Serial.println(LONG_STRING_MESSAGE);
           _error_flag = true;
         }
     }
@@ -69,7 +69,7 @@ void CLI::parse_line(){
                 counter++;
             }
             else{
-                SerialUSB.println("Input string too long.");
+                Serial.println(LONG_STRING_MESSAGE);
                 _error_flag = true;
                 break;
             }
@@ -89,6 +89,6 @@ int CLI::execute(){
       prt++;
   }
 
-  SerialUSB.println("Invalid command. Type \"help\" for more.");
+  Serial.println(INVALID_COMMAND_MESSAGE);
   return 0;
 }
