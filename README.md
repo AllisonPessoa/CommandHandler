@@ -77,13 +77,20 @@ When you enter 'hi 25', the output will be 25 lines of 'Hi!'. By default, the ma
 ## Library Reference
 * `CLI(CommandType user_commands[], byte len);` - Creates the CommandHandler instance and points to the corresponding functions
 * `begin(long boud)` - Enables command input though the Serial
-* `start_processing()` - Start waiting for commands from the Serial
+* `start_processing()` - Start waiting for commands from the Serial. Use this function inside `loop()`. The processor will check if there is new inputs in Serial, otherwise, pass. **Warning**: If you put too much delay on loop(), it will take more time to process the commands. A better solution is to use interrupts and Timers/Counters (for example, see [arduino-timer](https://github.com/contrem/arduino-timer) for UNO, etc. and [DueTimer](https://github.com/ivanseidel/DueTimer) for Due boards.
 
 ### Global variables
 * `args[MAX_NUM_ARGS][ARG_BUF_SIZE]` - Stores the input arguments. `MAX_NUM_ARGS` is 8, and `ARG_BUF_SIZE` is 64 by default. 
 
 ## Furthermore
 The default wecolme and error messages can be changed inside the CommandHandler.h file.
+```cpp
+#define LINE_BUF_SIZE 128   //Maximum input string length
+#define ARG_BUF_SIZE 64     //Maximum argument string length
+#define MAX_NUM_ARGS 8      //Maximum number of arguments
+#define Serial_Com Serial
+```
+The Serial can be changed to SerialUSB, for example, in Due Boards. See [Due Specs](https://www.arduino.cc/en/Guide/ArduinoDue)
 
 ## Credits
 Organized and improved by Allison Pessoa 2022, based on the tutorial posted by Mads Aasvik in https://www.norwegiancreations.com/2018/02/creating-a-command-line-interface-in-arduinos-serial-monitor/.
