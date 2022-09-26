@@ -1,5 +1,5 @@
 # CommandHandler
-An Arduino Library to make an easily-configurable Command Line Interface. You can send user-defined commands via Serial. This library will automatically execute the corresponding function. Ideal for projects in which the Arduino has to execute many different tasks. This project was based on the tutorial posted by Mads Aasvik in https://www.norwegiancreations.com/2018/02/creating-a-command-line-interface-in-arduinos-serial-monitor/.
+An Arduino Library to make an easily-configurable Command Line Interface. You can attach user-defined commands with functions. When calling the command through the Serial, this library will automatically execute the corresponding function. Ideal for projects in which the Arduino has to execute many different tasks. This project was based on the tutorial posted by Mads Aasvik in https://www.norwegiancreations.com/2018/02/creating-a-command-line-interface-in-arduinos-serial-monitor/.
 
 ## Installation
 1. Download the latest release from GitHub.
@@ -25,12 +25,13 @@ This library brings the advantage of gathering all informations of the functions
   CLI command_line(Commands, sizeof(Commands)/sizeof(Commands[0]));
 
   void setup(){
-    //Init your the interface with the desired boudrate
-    command_line.begin(9600);
+    //Init your the interface by sending the Serial pointer
+    Serial.begin(9600);
+    command_line.begin(&Serial);
   }
 
   void loop(){
-    //Start waiting for a Serial command. If it matches with one of the defined. Execute the corresponding function
+    //Start waiting for a Serial command. If it matches with one of the pre-defined, execute the corresponding function
     command_line.start_processing();
   }
   
@@ -60,14 +61,11 @@ This library supports commands with arguments. When calling a function from the 
 
   void loop(){ command_line.start_processing(); }
   
-  // Properly program the functions
+  // Untill here it was just the same as before
+  
   int cmd_say_hi(){
-    Serial.println("Hi!");
-  }
-
-  int cmd_say_hi(){
-    //By defalut, the args are a list of char[64], it can be transformed to numbers with the internal 'atof' function
-    for (int i=0; i<atof(command_line.args[1]); i++){ //The args[0] is the string before the first space. The first argument is args[1].
+    //By defalut, the args are a list of strings. If numerical, they can be converted to integers with the internal 'atof' function
+    for (int i=0; i<atof(command_line.args[1]); i++){ //args[0] is the input command. The first argument after space is args[1].
       Serial.println("Hi!");
     }
   }
@@ -76,7 +74,7 @@ When you enter 'hi 25', the output will be 25 lines of 'Hi!'. By default, the ma
 
 ## Library Reference
 * `CLI(CommandType user_commands[], byte len);` - Creates the CommandHandler instance and points to the corresponding functions
-* `begin(long boud)` - Enables command input though the Serial
+* `void begin(HardwareSerial *serialport);` - Enables command input though the serialport. Different Serial ports can be chosen, given that your board supports it.
 * `start_processing()` - Start waiting for commands from the Serial. Use this function inside `loop()`. The processor will check if there is new inputs in Serial, otherwise, pass. **Warning**: If you put too much delay on loop(), it will take more time to process the commands. A better solution is to use interrupts and Timers/Counters (for example, see [arduino-timer](https://github.com/contrem/arduino-timer) for UNO, etc. and [DueTimer](https://github.com/ivanseidel/DueTimer) for Due boards.
 
 ### Global variables
@@ -88,9 +86,7 @@ The default wecolme and error messages can be changed inside the CommandHandler.
 #define LINE_BUF_SIZE 128   //Maximum input string length
 #define ARG_BUF_SIZE 64     //Maximum argument string length
 #define MAX_NUM_ARGS 8      //Maximum number of arguments
-#define Serial_Com Serial
 ```
-The Serial can be changed to SerialUSB, for example, in Due Boards. See [Due Specs](https://www.arduino.cc/en/Guide/ArduinoDue)
 
 ## Credits
 Organized and improved by Allison Pessoa 2022, based on the tutorial posted by Mads Aasvik in https://www.norwegiancreations.com/2018/02/creating-a-command-line-interface-in-arduinos-serial-monitor/.
