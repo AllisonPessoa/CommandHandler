@@ -30,10 +30,10 @@ class CLI
   public:
     CLI(CommandType user_commands[], byte len);
     char args[MAX_NUM_ARGS][ARG_BUF_SIZE];
-    void begin(Serial_ *serialport);
+    void begin(HardwareSerial *serialport);
     void start_processing();
   private:
-    Serial_ *serialInUse;
+    HardwareSerial *serialInUse;
     bool _error_flag = false;
     bool _command_asked = false;
     char line[LINE_BUF_SIZE];

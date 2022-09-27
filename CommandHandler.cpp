@@ -14,9 +14,9 @@ CLI::CLI(CommandType user_commands[], byte len)
 }
 
 
-void CLI::begin(Serial_ *serialport){
+void CLI::begin(HardwareSerial *serialport){
     serialInUse = serialport;
-    //serialInUse->println(WELCOME_MESSAGE);
+    serialInUse->println(WELCOME_MESSAGE);
 }
 
 void CLI::start_processing(){
