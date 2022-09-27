@@ -1,3 +1,8 @@
+/*
+  CommandHandler.h - A library to make an easily-configurable Command Line Interface..
+  Created by Allison Pessoa, September, 2022.
+  Licensed under GNU GPLv3
+*/
 #define LINE_BUF_SIZE 128   //Maximum input string length
 #define ARG_BUF_SIZE 64     //Maximum argument string length
 #define MAX_NUM_ARGS 8      //Maximum number of arguments
@@ -21,12 +26,14 @@ class CLI
 {
   CommandType *_Commands;
   byte _num_commands;
+
   public:
     CLI(CommandType user_commands[], byte len);
     char args[MAX_NUM_ARGS][ARG_BUF_SIZE];
-    void begin(long boud);
+    void begin(Serial_ *serialport);
     void start_processing();
   private:
+    Serial_ *serialInUse;
     bool _error_flag = false;
     bool _command_asked = false;
     char line[LINE_BUF_SIZE];

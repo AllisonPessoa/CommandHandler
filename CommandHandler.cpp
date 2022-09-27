@@ -1,7 +1,7 @@
 /*
-  Morse.cpp - Library for flashing Morse code.
-  Created by David A. Mellis, November 2, 2007.
-  Released into the public domain.
+  CommandHandler.cpp - A library to make an easily-configurable Command Line Interface..
+  Created by Allison Pessoa, September, 2022.
+  Licensed under GNU GPLv3
 */
 #include "CommandHandler.h"
 #include <string>
@@ -14,12 +14,10 @@ CLI::CLI(CommandType user_commands[], byte len)
 }
 
 
-void CLI::begin(long boud){
-    Serial.begin(boud);
-    //while (!Serial.available());
-    Serial.println(WELCOME_MESSAGE);
+void CLI::begin(Serial_ *serialport){
+    serialInUse = serialport;
+    //serialInUse->println(WELCOME_MESSAGE);
 }
-
 
 void CLI::start_processing(){
     read_line();
@@ -40,16 +38,16 @@ void CLI::start_processing(){
 void CLI::read_line(){
     String line_string;
 
-    //while(!Serial.available());
+    //while(!serialInUse.available());
 
-    if(Serial.available()){
-        line_string = Serial.readStringUntil('\n');
+    if(serialInUse->available()){
+        line_string = serialInUse->readStringUntil('\n');
         if(line_string.length() < LINE_BUF_SIZE){
           line_string.toCharArray(line, LINE_BUF_SIZE);
           _command_asked = true;
         }
         else{
-          Serial.println(LONG_STRING_MESSAGE);
+          serialInUse->println(LONG_STRING_MESSAGE);
           _error_flag = true;
         }
     }
@@ -69,7 +67,7 @@ void CLI::parse_line(){
                 counter++;
             }
             else{
-                Serial.println(LONG_STRING_MESSAGE);
+                serialInUse->println(LONG_STRING_MESSAGE);
                 _error_flag = true;
                 break;
             }
@@ -89,6 +87,6 @@ int CLI::execute(){
       prt++;
   }
 
-  Serial.println(INVALID_COMMAND_MESSAGE);
+  serialInUse->println(INVALID_COMMAND_MESSAGE);
   return 0;
 }
